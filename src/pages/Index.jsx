@@ -18,7 +18,19 @@ const Index = () => {
     localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
   }, [chatHistory]);
 
-  const handleSendMessage = () => {
+  const fetchApiResponse = async () => {
+    const response = await fetch("https://api.example.com/respond", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
+    const data = await response.json();
+    return data.response;
+  };
+
+  const handleSendMessage = async () => {
     if (message.trim() === "") {
       toast({
         title: "Empty message",
@@ -29,11 +41,16 @@ const Index = () => {
       });
       return;
     }
+    const apiResponse = await fetchApiResponse();
     const newMessage = {
       id: Date.now(),
       text: message,
     };
-    setChatHistory([...chatHistory, newMessage]);
+    const responseMessage = {
+      id: Date.now() + 1,
+      text: apiResponse,
+    };
+    setChatHistory([...chatHistory, newMessage, responseMessage]);
     setMessage("");
   };
 
