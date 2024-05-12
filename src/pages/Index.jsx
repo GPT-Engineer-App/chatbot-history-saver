@@ -37,6 +37,33 @@ const Index = () => {
     setMessage("");
   };
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      toast({
+        title: "File uploaded",
+        description: `Received file: ${file.name}`,
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const autoRespond = (message) => {
+    const response = {
+      id: Date.now(),
+      text: `Auto-response: Received '${message}'`,
+    };
+    setChatHistory([...chatHistory, response]);
+  };
+
+  useEffect(() => {
+    if (chatHistory.length && chatHistory[chatHistory.length - 1].text !== message) {
+      autoRespond(message);
+    }
+  }, [chatHistory]);
+
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
       <VStack spacing={4} width="100%">
@@ -48,6 +75,7 @@ const Index = () => {
             </Text>
           ))}
         </Box>
+        <Input type="file" onChange={handleFileUpload} />
         <Input placeholder="Type your message here..." value={message} onChange={(e) => setMessage(e.target.value)} onKeyPress={(e) => e.key === "Enter" && handleSendMessage()} />
         <Button leftIcon={<FaPaperPlane />} colorScheme="blue" onClick={handleSendMessage}>
           Send
